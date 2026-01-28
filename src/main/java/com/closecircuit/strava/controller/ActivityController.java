@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityController {
 
-    private final ClubActivityRepository repository = null;
+    private final ClubActivityRepository repository;
 
     @GetMapping
     public List<ClubActivityLog> getAllActivities() {
