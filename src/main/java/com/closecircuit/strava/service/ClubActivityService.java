@@ -98,6 +98,13 @@ public class ClubActivityService {
         
         logEntity.setDeviceName(dto.getDeviceName());
         logEntity.setCollectedAt(Instant.now());
+        if (dto.getStartDate() != null && !dto.getStartDate().isEmpty()) {
+            try {
+                logEntity.setStartDate(Instant.parse(dto.getStartDate()));
+            } catch (Exception e) {
+                log.debug("Could not parse start_date: {}", dto.getStartDate());
+            }
+        }
 
         return logEntity;
     }

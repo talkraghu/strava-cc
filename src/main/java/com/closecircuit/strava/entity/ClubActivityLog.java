@@ -49,6 +49,10 @@ public class ClubActivityLog {
     @Column(name = "collected_at", nullable = false)
     private Instant collectedAt;
 
+    /** When the activity was performed (from Strava start_date). Used for date-range stats. */
+    @Column(name = "start_date")
+    private Instant startDate;
+
     // ===== Getters & Setters =====
 
     public Long getId() {
@@ -146,5 +150,13 @@ public class ClubActivityLog {
 
     public void setCollectedAt(Instant collectedAt) {
         this.collectedAt = collectedAt;
+    }
+
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Instant startDate) {
+        this.startDate = startDate;
     }
 }

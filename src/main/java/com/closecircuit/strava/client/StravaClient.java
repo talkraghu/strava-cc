@@ -128,6 +128,7 @@ public class StravaClient {
         }
 
         dto.setDeviceName((String) raw.get("device_name"));
+        dto.setStartDate((String) raw.get("start_date"));
 
         Map<String, Object> athleteMap = (Map<String, Object>) raw.get("athlete");
         if (athleteMap != null) {
@@ -163,6 +164,7 @@ public class StravaClient {
                     dto.setTotalElevationGain(raw.get("total_elevation_gain") instanceof Number ? ((Number) raw.get("total_elevation_gain")).doubleValue() : null);
 
                     dto.setDeviceName((String) raw.get("device_name"));
+                    dto.setStartDate((String) raw.get("start_date"));
 
                     Map<String, Object> athleteMap = (Map<String, Object>) raw.get("athlete");
                     if (athleteMap != null) {

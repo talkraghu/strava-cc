@@ -1,0 +1,232 @@
+.club-overview {
+  animation: fadeIn 0.5s ease-in;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.overview-stats-grid {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  color: #667eea;
+  opacity: 0.8;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.charts-container {
+  flex: 0 0 auto;
+  min-height: 0;
+  height: 22vh;
+  max-height: 22vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 8px;
+  padding: 0.35rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-card h3 {
+  color: #333;
+  margin: 0 0 0.15rem 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.chart-wrapper {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-members-preview {
+  flex: 1 1 auto;
+  min-height: 0;
+  background: white;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+}
+
+.top-members-preview h3 {
+  color: #333;
+  margin: 0 0 0.35rem 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.top-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.top-members-list.with-details {
+  gap: 0.15rem;
+}
+
+.top-members-header {
+  display: grid;
+  grid-template-columns: 35px 1fr 90px 80px 90px;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: #667eea;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.top-members-header .col-rank,
+.top-members-header .col-name,
+.top-members-header .col-distance,
+.top-members-header .col-time,
+.top-members-header .col-elevation {
+  text-align: left;
+}
+
+.top-members-header .col-distance,
+.top-members-header .col-time,
+.top-members-header .col-elevation {
+  text-align: right;
+}
+
+.top-member-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.top-members-list.with-details .top-member-item {
+  display: grid;
+  grid-template-columns: 35px 1fr 90px 80px 90px;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+}
+
+.top-member-item:hover {
+  background: #e9ecef;
+}
+
+.top-member-item .rank {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 0.75rem;
+  min-width: 28px;
+}
+
+.top-member-item .name {
+  flex: 1;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-member-item .distance {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 0.8rem;
+  text-align: right;
+  margin-left: auto;
+}
+
+.top-member-item .time {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.top-member-item .elevation {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+@media (max-width: 700px) {
+  .overview-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+}
