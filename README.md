@@ -20,6 +20,7 @@ A Spring Boot application that automatically collects and stores Strava club act
 
 - **Automated Activity Collection**: Scheduled polling of Strava club activities at configurable intervals
 - **OAuth Token Management**: Automatic token refresh to maintain API access
+- **Automated OAuth Flow**: Web-based OAuth token retrieval with automatic persistence
 - **Data Persistence**: Stores activities in PostgreSQL with duplicate detection
 - **REST API**: Endpoints to retrieve activities and export data
 - **Excel Export**: Export collected activities to Excel format (.xlsx)
@@ -99,7 +100,7 @@ strava.club-id=YOUR_CLUB_ID
 # Strava OAuth Configuration
 strava.oauth.client-id=YOUR_CLIENT_ID
 strava.oauth.client-secret=YOUR_CLIENT_SECRET
-strava.oauth.redirect-uri=http://localhost
+strava.oauth.redirect-uri=http://localhost:8080/oauth/callback
 
 # Strava OAuth Token State (initial tokens)
 strava.auth.access-token=YOUR_ACCESS_TOKEN
@@ -206,6 +207,19 @@ View application metrics.
 
 **Endpoint**: `GET /actuator/metrics`
 
+### OAuth Token Retrieval
+
+Automated OAuth flow for obtaining Strava API tokens.
+
+**Endpoint**: `GET /oauth/authorize`
+
+**Description**: Initiates the OAuth flow by redirecting to Strava authorization page. After authorization, redirects to `/oauth/callback` which exchanges the code for tokens and displays them in a user-friendly HTML page.
+
+**Example**:
+- Open in browser: `http://localhost:8080/oauth/authorize`
+- Follow the authorization flow
+- Tokens are automatically saved to `application.properties` (if permissions allow)
+
 ## 📁 Project Structure
 
 ```
@@ -223,7 +237,8 @@ StravaCC/
 │   │   │       │   └── SchedulingConfig.java     # Scheduling configuration
 │   │   │       ├── controller/
 │   │   │       │   ├── ActivityController.java   # REST endpoints
-│   │   │       │   └── ClubActivityExportController.java
+│   │   │       │   ├── ClubActivityExportController.java
+│   │   │       │   └── StravaOAuthController.java # OAuth token retrieval
 │   │   │       ├── dto/
 │   │   │       │   └── StravaActivityDto.java    # Data transfer objects
 │   │   │       ├── entity/
@@ -236,6 +251,8 @@ StravaCC/
 │   │   │       │   ├── ClubActivityService.java   # Business logic
 │   │   │       │   ├── ClubActivityExcelService.java
 │   │   │       │   └── StravaTokenService.java    # Token management
+│   │   │       ├── util/
+│   │   │       │   └── TokenPersistenceUtil.java  # Token persistence utility
 │   │   │       └── utils/
 │   │   │           └── ActivityIdGenerator.java  # ID generation utility
 │   │   └── resources/
@@ -278,18 +295,57 @@ The table uses `activity_id` as a unique constraint to prevent duplicate entries
    - **Application Name**: Your app name
    - **Category**: Choose appropriate category
    - **Website**: Your website (or `http://localhost`)
-   - **Authorization Callback Domain**: `localhost`
+   - **Authorization Callback Domain**: `localhost:8080` (for automated OAuth flow)
 4. Save and note your **Client ID** and **Client Secret**
 
 ### Step 2: Get OAuth Tokens
 
+#### Automated Method (Recommended)
+
+The application includes an automated OAuth flow that simplifies token retrieval:
+
+1. **Update Strava App Settings**:
+   - Go to [Strava API Settings](https://www.strava.com/settings/api)
+   - Find your application (Client ID: YOUR_CLIENT_ID)
+   - Set **Authorization Callback Domain** to: `localhost:8080`
+   - Save the changes
+
+2. **Start the Application**:
+   ```bash
+   mvn spring-boot:run
+   ```
+
+3. **Initiate OAuth Flow**:
+   - Open your browser and navigate to: `http://localhost:8080/oauth/authorize`
+   - You'll be redirected to Strava to authorize the application
+   - After authorization, you'll be redirected back to a success page
+
+4. **Token Retrieval**:
+   - The success page displays your `access_token`, `refresh_token`, and `expires_at`
+   - **Tokens are automatically saved** to `application.properties` (if file permissions allow)
+   - If auto-save fails, manually copy the tokens from the success page
+
+5. **Restart Application** (if tokens were auto-saved):
+   - Restart the Spring Boot application to load the new tokens
+   - The application will automatically refresh tokens when they expire
+
+**Benefits of Automated Method**:
+- ✅ No manual URL construction or code copying
+- ✅ Automatic token persistence to `application.properties`
+- ✅ User-friendly HTML interface with copy buttons
+- ✅ Automatic token refresh on expiration
+
+#### Manual Method (Alternative)
+
+If you prefer to get tokens manually:
+
 1. Construct the authorization URL:
    ```
-   https://www.strava.com/oauth/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=http://localhost&scope=read,activity:read_all&approval_prompt=force
+   https://www.strava.com/oauth/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=http://localhost:8080/oauth/callback&scope=activity:read_all
    ```
 
 2. Open the URL in your browser and authorize the application
-3. After authorization, you'll be redirected to `http://localhost?code=AUTHORIZATION_CODE`
+3. After authorization, you'll be redirected to `http://localhost:8080/oauth/callback?code=AUTHORIZATION_CODE`
 4. Exchange the authorization code for tokens:
    ```bash
    curl -X POST https://www.strava.com/oauth/token \
@@ -299,7 +355,7 @@ The table uses `activity_id` as a unique constraint to prevent duplicate entries
      -d grant_type=authorization_code
    ```
 
-5. Save the `access_token`, `refresh_token`, and `expires_at` from the response
+5. Save the `access_token`, `refresh_token`, and `expires_at` from the response to `application.properties`
 
 ### Step 3: Get Your Club ID
 
@@ -341,6 +397,13 @@ Update `application.properties` with your credentials (see [Configuration](#conf
 - Ensure `refresh_token` is valid and not expired
 - Check `client_id` and `client_secret` are correct
 - Verify network connectivity to `https://www.strava.com`
+- If tokens expire, use the automated OAuth flow: `http://localhost:8080/oauth/authorize`
+
+### OAuth Flow Issues
+
+- **Redirect URI Mismatch**: Ensure `Authorization Callback Domain` in Strava settings matches `localhost:8080`
+- **Tokens Not Auto-Saved**: Check file permissions for `application.properties`. If auto-save fails, manually copy tokens from the success page
+- **Authorization Denied**: Make sure you authorize the application with the required scopes (`activity:read_all`)
 
 ### Application Won't Start
 
@@ -370,3 +433,8 @@ For questions or issues, please open an issue on GitHub.
 ---
 
 **Note**: Remember to keep your Strava API credentials secure. Never commit tokens or secrets to version control. Consider using environment variables or Spring profiles for sensitive configuration in production.
+
+## rags's readme
+cd C:\Users\ragk\Documents\workspace-spring-tools-for-eclipse-4.30.0.RELEASE\StravaCC
+mvn clean compile
+mvn spring-boot:run

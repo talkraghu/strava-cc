@@ -26,6 +26,10 @@ public class StravaActivityDto {
     @JsonProperty("device_name")
     private String deviceName;
 
+    /** Activity start time (ISO 8601 from Strava API start_date) */
+    @JsonProperty("start_date")
+    private String startDate;
+
     private Athlete athlete;
 
     /* ===== Getters & Setters ===== */
@@ -92,6 +96,14 @@ public class StravaActivityDto {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 
     public Athlete getAthlete() {

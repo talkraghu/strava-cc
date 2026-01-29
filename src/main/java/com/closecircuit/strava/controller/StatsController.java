@@ -96,6 +96,20 @@ public class StatsController {
     }
 
     /**
+     * Get distance per member for a given activity type (Walk, Ride, Hike, Run).
+     * GET /stats/members-by-activity-type?activityType=Run&fromDate=...&toDate=...
+     */
+    @GetMapping("/members-by-activity-type")
+    public ResponseEntity<List<MemberStatsDto>> getMemberStatsByActivityType(
+            @RequestParam String activityType,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant toDate) {
+        
+        List<MemberStatsDto> stats = statsService.getMemberStatsByActivityType(activityType, fromDate, toDate);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
      * Get top N members by distance
      * GET /stats/leaderboard?limit=10&fromDate=...&toDate=...
      */

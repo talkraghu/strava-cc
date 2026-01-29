@@ -15,6 +15,7 @@ public class StravaProperties {
     /** OAuth client config */
     private String clientId;
     private String clientSecret;
+    private String redirectUri;
 
     /** OAuth token state */
     private Auth auth = new Auth();
@@ -54,6 +55,14 @@ public class StravaProperties {
 
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
+    }
+
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+
+    public void setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
     }
 
     public Auth getAuth() {

@@ -1,0 +1,46 @@
+.leaderboard-container {
+  animation: fadeIn 0.5s ease-in;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.leaderboard-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.leaderboard-header h2 {
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.trophy-icon {
+  font-size: 1.5rem;
+  color: #FFD700;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.leaderboard-grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem;
+  align-content: start;
+}
