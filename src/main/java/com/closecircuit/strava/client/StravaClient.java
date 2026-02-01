@@ -1,6 +1,7 @@
 package com.closecircuit.strava.client;
 
 import com.closecircuit.strava.config.StravaProperties;
+import com.closecircuit.strava.dto.ClubGroupEventDto;
 import com.closecircuit.strava.dto.StravaActivityDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +142,54 @@ public class StravaClient {
         return dto;
     }
 
+    /**
+     * Fetch club group events from Strava API.
+     * GET /clubs/{id}/group_events - returns events with upcoming_occurrences (up to 5 per event).
+     */
+    @SuppressWarnings("unchecked")
+    public List<ClubGroupEventDto> fetchClubGroupEvents() {
+        Long clubId = properties.getClubId();
+        log.info("Fetching Strava club group events (clubId={})", clubId);
+
+        try {
+            List<Map<String, Object>> rawList = stravaWebClient
+                    .get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/clubs/{id}/group_events")
+                            .build(clubId))
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                    .block();
+
+            if (rawList == null) {
+                return List.of();
+            }
+
+            List<ClubGroupEventDto> result = new ArrayList<>();
+            for (Map<String, Object> raw : rawList) {
+                ClubGroupEventDto dto = new ClubGroupEventDto();
+                if (raw.get("id") instanceof Number n) {
+                    dto.setId(n.longValue());
+                }
+                dto.setTitle((String) raw.get("title"));
+                dto.setActivityType((String) raw.get("activity_type"));
+                Object occ = raw.get("upcoming_occurrences");
+                if (occ instanceof List<?> list) {
+                    dto.setUpcomingOccurrences(list.stream()
+                            .filter(String.class::isInstance)
+                            .map(String.class::cast)
+                            .collect(Collectors.toList()));
+                }
+                result.add(dto);
+            }
+            log.info("Fetched {} club group events", result.size());
+            return result;
+        } catch (WebClientResponseException ex) {
+            log.warn("Strava club group events API error: status={}, body={}. Club events count may be unavailable.",
+                    ex.getStatusCode(), ex.getResponseBodyAsString());
+            return List.of();
+        }
+    }
 
     /**
      * Step 2: Map raw data to DTO

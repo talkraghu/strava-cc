@@ -1,6 +1,8 @@
 package com.closecircuit.strava.service;
 
+import com.closecircuit.strava.client.StravaClient;
 import com.closecircuit.strava.dto.ActivityStatsDto;
+import com.closecircuit.strava.dto.ClubGroupEventDto;
 import com.closecircuit.strava.dto.ClubStatsDto;
 import com.closecircuit.strava.dto.MemberStatsDto;
 import com.closecircuit.strava.repository.ClubActivityRepository;
@@ -9,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,9 +24,11 @@ public class ClubStatsService {
     private static final Instant DEFAULT_TO = Instant.parse("2099-12-31T23:59:59Z");
 
     private final ClubActivityRepository repository;
+    private final StravaClient stravaClient;
 
-    public ClubStatsService(ClubActivityRepository repository) {
+    public ClubStatsService(ClubActivityRepository repository, StravaClient stravaClient) {
         this.repository = repository;
+        this.stravaClient = stravaClient;
     }
 
     /**
@@ -66,6 +71,12 @@ public class ClubStatsService {
             // Get all members by distance (for overview list)
             List<MemberStatsDto> topMembers = getTopMembers(Integer.MAX_VALUE, from, to);
             stats.setTopMembers(topMembers != null ? topMembers : new ArrayList<>());
+
+            // Club (group) events: count and list only events with at least one occurrence in date range
+            long clubEventsCount = countClubEventsInRange(from, to);
+            stats.setTotalClubEvents(clubEventsCount);
+            List<ClubGroupEventDto> eventsInRange = getClubEventsInRange(from, to);
+            stats.setClubEvents(eventsInRange != null ? eventsInRange : new ArrayList<>());
         } catch (Exception e) {
             log.error("Error getting club stats", e);
             // Return empty stats instead of throwing
@@ -76,9 +87,73 @@ public class ClubStatsService {
             stats.setTotalElevationGain(0.0);
             stats.setActivityTypeBreakdown(new ArrayList<>());
             stats.setTopMembers(new ArrayList<>());
+            stats.setTotalClubEvents(0L);
+            stats.setClubEvents(new ArrayList<>());
         }
 
         return stats;
+    }
+
+    /**
+     * Count club group event occurrences that fall within [from, to].
+     * Strava API returns events with upcoming_occurrences (up to 5 per event); past occurrences are not returned.
+     */
+    private long countClubEventsInRange(Instant from, Instant to) {
+        try {
+            List<ClubGroupEventDto> events = stravaClient.fetchClubGroupEvents();
+            if (events == null) return 0L;
+            long count = 0;
+            for (ClubGroupEventDto event : events) {
+                List<String> occurrences = event.getUpcomingOccurrences();
+                if (occurrences == null) continue;
+                for (String occ : occurrences) {
+                    try {
+                        Instant occInstant = Instant.parse(occ);
+                        if (!occInstant.isBefore(from) && !occInstant.isAfter(to)) {
+                            count++;
+                        }
+                    } catch (DateTimeParseException e) {
+                        log.debug("Skip unparseable event occurrence: {}", occ);
+                    }
+                }
+            }
+            return count;
+        } catch (Exception e) {
+            log.warn("Could not fetch club group events for count", e);
+            return 0L;
+        }
+    }
+
+    /**
+     * Return club group events that have at least one occurrence in [from, to].
+     */
+    private List<ClubGroupEventDto> getClubEventsInRange(Instant from, Instant to) {
+        try {
+            List<ClubGroupEventDto> events = stravaClient.fetchClubGroupEvents();
+            if (events == null || events.isEmpty()) return new ArrayList<>();
+            List<ClubGroupEventDto> inRange = new ArrayList<>();
+            for (ClubGroupEventDto event : events) {
+                List<String> occurrences = event.getUpcomingOccurrences();
+                if (occurrences == null) continue;
+                boolean hasInRange = false;
+                for (String occ : occurrences) {
+                    try {
+                        Instant occInstant = Instant.parse(occ);
+                        if (!occInstant.isBefore(from) && !occInstant.isAfter(to)) {
+                            hasInRange = true;
+                            break;
+                        }
+                    } catch (DateTimeParseException e) {
+                        log.debug("Skip unparseable event occurrence: {}", occ);
+                    }
+                }
+                if (hasInRange) inRange.add(event);
+            }
+            return inRange;
+        } catch (Exception e) {
+            log.warn("Could not fetch club group events for list", e);
+            return new ArrayList<>();
+        }
     }
 
     /**

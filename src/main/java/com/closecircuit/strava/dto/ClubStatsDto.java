@@ -9,12 +9,14 @@ public class ClubStatsDto {
     
     private Long totalMembers;
     private Long totalActivities;
+    private Long totalClubEvents; // number of club (group) events in the date range
     private Double totalDistance; // in km
     private Integer totalMovingTime; // in minutes
     private Double totalElevationGain; // in km
     private List<ActivityStatsDto> activityTypeBreakdown;
     private List<MemberStatsDto> topMembers; // Top members by distance
-    
+    private List<ClubGroupEventDto> clubEvents; // Club (group) events from Strava
+
     // Getters and Setters
     public Long getTotalMembers() {
         return totalMembers;
@@ -30,6 +32,14 @@ public class ClubStatsDto {
     
     public void setTotalActivities(Long totalActivities) {
         this.totalActivities = totalActivities;
+    }
+
+    public Long getTotalClubEvents() {
+        return totalClubEvents;
+    }
+
+    public void setTotalClubEvents(Long totalClubEvents) {
+        this.totalClubEvents = totalClubEvents;
     }
     
     public Double getTotalDistance() {
@@ -70,5 +80,13 @@ public class ClubStatsDto {
     
     public void setTopMembers(List<MemberStatsDto> topMembers) {
         this.topMembers = topMembers;
+    }
+
+    public List<ClubGroupEventDto> getClubEvents() {
+        return clubEvents;
+    }
+
+    public void setClubEvents(List<ClubGroupEventDto> clubEvents) {
+        this.clubEvents = clubEvents;
     }
 }
