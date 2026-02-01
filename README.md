@@ -435,6 +435,7 @@ For questions or issues, please open an issue on GitHub.
 **Note**: Remember to keep your Strava API credentials secure. Never commit tokens or secrets to version control. Consider using environment variables or Spring profiles for sensitive configuration in production.
 
 ## rags's readme
-cd C:\Users\ragk\Documents\workspace-spring-tools-for-eclipse-4.30.0.RELEASE\StravaCC
-mvn clean compile
-mvn spring-boot:run
+
+- cd C:\Users\ragk\Documents\workspace-spring-tools-for-eclipse-4.30.0.RELEASE\StravaCC
+- mvn clean compile
+- mvn spring-boot:run
