@@ -437,5 +437,11 @@ For questions or issues, please open an issue on GitHub.
 ## rags's readme
 
 - cd C:\Users\ragk\Documents\workspace-spring-tools-for-eclipse-4.30.0.RELEASE\StravaCC
+- Server side
 - mvn clean compile
 - mvn spring-boot:run
+
+- Client side
+- cd StravaCC\strava-dashboard
+- npm install
+- npm start

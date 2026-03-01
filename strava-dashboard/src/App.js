@@ -4,10 +4,11 @@ import MemberList from './components/MemberList';
 import ClubOverview from './components/ClubOverview';
 import Leaderboard from './components/Leaderboard';
 import ActivityStats from './components/ActivityStats';
+import ActivityTypePanels from './components/ActivityTypePanels';
 import DateRangePicker from './components/DateRangePicker';
 import LoadingSpinner from './components/LoadingSpinner';
 import { statsApi } from './services/api';
-import { FaUsers, FaTrophy, FaChartBar, FaRunning } from 'react-icons/fa';
+import { FaUsers, FaTrophy, FaChartBar, FaRunning, FaTh } from 'react-icons/fa';
 
 function App() {
   // Start with no date filter so overview shows all-time totals (proper data).
@@ -115,6 +116,12 @@ function App() {
         >
           <FaChartBar /> Activity Stats
         </button>
+        <button
+          className={activeTab === 'splits' ? 'active' : ''}
+          onClick={() => setActiveTab('splits')}
+        >
+          <FaTh /> Activity Splits
+        </button>
       </nav>
 
       <main className="main-content">
@@ -136,6 +143,9 @@ function App() {
             )}
             {activeTab === 'activities' && (
               <ActivityStats fromDate={fromDate} toDate={toDate} />
+            )}
+            {activeTab === 'splits' && (
+              <ActivityTypePanels fromDate={fromDate} toDate={toDate} />
             )}
           </>
         )}
