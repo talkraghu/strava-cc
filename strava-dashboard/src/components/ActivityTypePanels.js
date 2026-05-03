@@ -210,10 +210,20 @@ const ActivityTypePanels = ({ fromDate, toDate }) => {
     );
   };
 
+  // Filter out activities with zero total distance and zero activities
+  const visibleActivityTypes = activityTypes.filter(activityType => {
+    const stats = activityData[activityType]?.stats;
+    return stats && ((stats.totalDistance > 0) || (stats.totalActivities > 0));
+  });
+
   return (
     <div className="activity-type-panels-container">
-      <div className="panels-grid">
-        {activityTypes.map(activityType => renderActivityPanel(activityType))}
+      <div className="panels-row">
+        {visibleActivityTypes.length === 0 ? (
+          <div style={{ padding: '2rem', color: '#888', fontStyle: 'italic' }}>No activity data available.</div>
+        ) : (
+          visibleActivityTypes.map(activityType => renderActivityPanel(activityType))
+        )}
       </div>
     </div>
   );
