@@ -435,6 +435,7 @@ For questions or issues, please open an issue on GitHub.
 **Note**: Remember to keep your Strava API credentials secure. Never commit tokens or secrets to version control. Consider using environment variables or Spring profiles for sensitive configuration in production.
 
 ## rags's readme
+https://www.strava.com/oauth/authorize?client_id=185713&response_type=code&redirect_uri=http://localhost:8080/oauth/callback&scope=activity:read_all
 
 - cd C:\Users\ragk\Documents\workspace-spring-tools-for-eclipse-4.30.0.RELEASE\StravaCC
 - Server side
